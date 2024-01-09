@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Match Race with Mo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content= "matchrace match race sailing sail racing match racing matchracing">
+<meta property=”og:title”>
+<meta property=”og:description”>
+<meta property=”og:type”>
+<meta property=”og:image”>
+<meta property=”og:url”>
+<meta property=”og:site_name”>
+<link rel="icon" type="image/png" href="icon.png" />
+
+<style>
+html,body {font-family:"Verdana",sans-serif}
+h1,h2,h3,h4,h5,h6 {font-family:"Segoe UI",sans-serif}
+.top-right {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+}
+</style>
+<script src=""></script>
+<h1><center>🚧👷‍♂️👷‍♀️ Attention! This space is currently under construction! 🚧👷‍♂️👷‍♀️</center></h1>
+
+<button onclick="myFunction()">Click me</button>
+<button onclick="getElementById('demo').innerHTML = Date()">What is the time?</button>
+<button onclick="retrieve_location()">My Location</button>
+
+<p id="testButton"></p>
+<p id="demo"></p>
+<p id="Location"></p>
+
+
+<form name="form1" id="form1">
+    Geolocation Capability: <input type="text" name="capability">
+    <p />
+    Latitude:  <input type="text" name="latitude">
+    <p />
+    Longitude: <input type="text" name="longitude">
+    <p />
+</form>
+
+<script language="javascript">
+function myFunction() {
+    document.getElementById("testButton").innerHTML = "YOU CLICKED ME!";
+}
+
+function verify_geolocation_capability()
+{
+    if (navigator.geolocation)
+    {
+        document.form1.capability.value = "Enabled";
+    }
+    else
+    {
+        document.form1.capability.value = "Not Enabled";
+    }
+}
+
+function display_geolocation_properties(position)
+{
+    document.form1.latitude.value = position.coords.latitude;
+    document.form1.longitude.value = position.coords.longitude;
+}
+
+function handle_error(error)
+{
+    document.form1.capability.value = "ERROR: " + error.code;
+}
+
+function retrieve_location()
+{
+    verify_geolocation_capability();
+    if (navigator.geolocation)
+    {
+        navigator.geolocation.getCurrentPosition(display_geolocation_properties, handle_error);
+    }
+    else
+    {
+        alert("This browser does not support geolocation services.");
+    }
+}
+</script>
+
+</html>
