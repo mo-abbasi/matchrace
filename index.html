@@ -43,10 +43,26 @@ h1,h2,h3,h4,h5,h6 {font-family:"Segoe UI",sans-serif}
     <a href="videos.html">Videos</a>
 </p>
 
+<h2>Below is just some tests and work in progress</h2>
+
 <p style="font-size: 20px; color:#040b11;">
     Your text/comment 
     <input type="text" name="Name" size="20">  
     <br>
 </p> 
+
+<br>
+
+<button onclick="myFunction()">Click me</button>
+<button onclick="getElementById('demo').innerHTML = Date()">What is the time?</button>
+
+<p id="testButton"></p>
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    document.getElementById("testButton").innerHTML = "YOU CLICKED ME!";
+}
+</script>
 
 </html>
