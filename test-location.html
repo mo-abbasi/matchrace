@@ -59,23 +59,39 @@ function verify_geolocation_capability()
     }
 }
 
+id = 0;
 function display_geolocation_properties(position)
 {
     document.form1.latitude.value = position.coords.latitude;
     document.form1.longitude.value = position.coords.longitude;
+    document.form1.capability.value = id;
 }
 
 function handle_error(error)
 {
     document.form1.capability.value = "ERROR: " + error.code;
 }
+const options = {
+  enableHighAccuracy: true,
+  timeout: 10,
+};
+
+navigator.geolocation.getCurrentPosition(
+  successCallback,
+  errorCallback,
+  options
+);
 
 function retrieve_location()
-{
+{    
     verify_geolocation_capability();
     if (navigator.geolocation)
     {
-        navigator.geolocation.getCurrentPosition(display_geolocation_properties, handle_error);
+        if (id)
+        {
+            navigator.geolocation.clearWatch(id);
+        }
+        id = navigator.geolocation.watchPosition(display_geolocation_properties, handle_error, options);
     }
     else
     {
