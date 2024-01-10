@@ -28,7 +28,8 @@ h1,h2,h3,h4,h5,h6 {font-family:"Segoe UI",sans-serif}
 <button onclick="getElementById('demo').innerHTML = Date()">What is the time?</button>
 <button onclick="retrieve_location()">My Location</button>
 
-<p id="testButton"></p>
+<p id="local"></p>
+<p id="session"></p>
 <p id="demo"></p>
 <p id="Location"></p>
 
@@ -48,7 +49,20 @@ h1,h2,h3,h4,h5,h6 {font-family:"Segoe UI",sans-serif}
 
 <script language="javascript">
 function myFunction() {
-    document.getElementById("testButton").innerHTML = "YOU CLICKED ME!";
+    // document.getElementById("testButton").innerHTML = "YOU CLICKED ME!";
+
+    if (sessionStorage.clickcount) {
+        sessionStorage.clickcount = Number(sessionStorage.clickcount) + 1;
+    } else {
+        sessionStorage.clickcount = 1;
+    }
+    if (localStorage.clickcount) {
+        localStorage.clickcount = Number(localStorage.clickcount) + 1;
+    } else {
+        localStorage.clickcount = 1;
+    }
+    document.getElementById("local").innerHTML = "You have clicked the button " + localStorage.clickcount + " time(s).";
+    document.getElementById("session").innerHTML = "You have clicked the button " + sessionStorage.clickcount + " time(s) in this session.";
 }
 
 function verify_geolocation_capability()
