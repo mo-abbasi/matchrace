@@ -1,26 +1,29 @@
 const teams = ['Widex Munch', 'Momentum', 'Rossing Racing', 'Team TBD', 'DTU'];
-let results = {
-    'Widex Munch': { 'Momentum': null, 'Rossing Racing': null, 'Team TBD': null, 'DTU': null },
-    'Momentum': { 'Widex Munch': null, 'Rossing Racing': null, 'Team TBD': 0, 'DTU': 0 },
-    'Rossing Racing': { 'Widex Munch': null, 'Momentum': null, 'Team TBD': 1, 'DTU': 1 },
-    'Team TBD': { 'Widex Munch': null, 'Momentum': 1, 'Rossing Racing': 0, 'DTU': 0 },
-    'DTU': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 2 }
-};
+
+let results = {};
+
+// Initialize the results object with null values
+teams.forEach(team => {
+    results[team] = {};
+    teams.forEach(opponent => {
+        results[team][opponent] = null;
+    });
+});
 
 const completedRaces = [
-    { winner: 'DTU', loser: 'Team TBD' },   // Rikke (DTU) won against Xavier (Team TBD)
-    { winner: 'Momentum', loser: 'DTU' },   // Mo (Momentum) won against Rikke (DTU)
-    { winner: 'Momentum', loser: 'Team TBD' },  // Mo (Momentum) won against Xavier (Team TBD)
-    { winner: 'Rossing Racing', loser: 'DTU' },  // Matias (Rossing Racing) won against Rikke (DTU)
-    { winner: 'Rossing Racing', loser: 'Team TBD' }, // Matias (Rossing Racing) won against Xavier (Team TBD)
-    { winner: 'Matias', loser: 'Xavier' },  // Matias (Rossing Racing) won against Xavier (Team TBD)
-    { winner: 'Matias', loser: 'Momentum' },  // Matias (Rossing Racing) won against Mo (Momentum)
-    { winner: 'Matias', loser: 'Morten' },  // Matias (Rossing Racing) won against Morten
-    { winner: 'Matias', loser: 'Rikke' },  // Matias (Rossing Racing) won against Rikke
-    { winner: 'Morten', loser: 'Xavier' }, // Morten won against Xavier
-    { winner: 'Mo', loser: 'Xavier' }, // Mo won against Xavier
-    { winner: 'Mo', loser: 'Rikke' }, // Mo won against Rikke
-    { winner: 'Rikke', loser: 'Xavier' } // Rikke won against Xavier
+    { winner: 'DTU', loser: 'Team TBD' },
+    { winner: 'Momentum', loser: 'DTU' },
+    { winner: 'Momentum', loser: 'Team TBD' },
+    { winner: 'Rossing Racing', loser: 'DTU' },
+    { winner: 'Rossing Racing', loser: 'Team TBD' },
+    { winner: 'Rossing Racing', loser: 'Xavier' },
+    { winner: 'Rossing Racing', loser: 'Mo' },
+    { winner: 'Rossing Racing', loser: 'Morten' },
+    { winner: 'Rossing Racing', loser: 'Rikke' },
+    { winner: 'Morten', loser: 'Xavier' },
+    { winner: 'Momentum', loser: 'Xavier' },
+    { winner: 'Momentum', loser: 'Rikke' },
+    { winner: 'Rikke', loser: 'Xavier' }
 ];
 
 function calculateWinCounts() {
