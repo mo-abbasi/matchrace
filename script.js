@@ -7,19 +7,32 @@ const results = {
     'DTU': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 1 }
 };
 
+const completedRaces = [
+    { winner: 'DTU', loser: 'Team TBD' },  // Rikke (DTU) won against Xavier (Team TBD)
+    { winner: 'Momentum', loser: 'DTU' },  // Mo (Momentum) won against Rikke (DTU)
+    { winner: 'Momentum', loser: 'Team TBD' },  // Mo (Momentum) won against Xavier (Team TBD)
+    { winner: 'Rossing Racing', loser: 'DTU' }  // Matias (Rossing Racing) won against Rikke (DTU)
+];
+
 function calculateWinPercentage() {
+    const winCounts = {};
+    const matchCounts = {};
+    teams.forEach(team => {
+        winCounts[team] = 0;
+        matchCounts[team] = 0;
+    });
+
+    completedRaces.forEach(race => {
+        winCounts[race.winner]++;
+        matchCounts[race.winner]++;
+        matchCounts[race.loser]++;
+    });
+
     const percentages = {};
-    for (let team in results) {
-        let matches = 0;
-        let wins = 0;
-        for (let opponent in results[team]) {
-            if (results[team][opponent] !== null) {
-                matches++;
-                wins += results[team][opponent];
-            }
-        }
-        percentages[team] = matches > 0 ? (wins / matches) * 100 : 0;
-    }
+    teams.forEach(team => {
+        percentages[team] = matchCounts[team] > 0 ? (winCounts[team] / matchCounts[team]) * 100 : 0;
+    });
+
     return percentages;
 }
 
