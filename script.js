@@ -37,19 +37,18 @@ function calculateWinPercentage() {
 }
 
 function calculateRankings(percentages) {
-    return Object.entries(percentages)
-        .sort(([, a], [, b]) => b - a) // Sort by win percentage
-        .map(([team], index) => [team, index + 1]); // Assign ranks
+    const sortedTeams = Object.keys(percentages).sort((a, b) => percentages[b] - percentages[a]);
+    const rankings = {};
+    sortedTeams.forEach((team, index) => {
+        rankings[team] = index + 1;
+    });
+    return rankings;
 }
 
 function populateResults() {
     const tbody = document.getElementById('results-body');
     const percentages = calculateWinPercentage();
     const rankings = calculateRankings(percentages);
-    const rankingMap = {};
-    rankings.forEach(([team, rank]) => {
-        rankingMap[team] = rank;
-    });
 
     teams.forEach(team => {
         const row = document.createElement('tr');
@@ -57,7 +56,7 @@ function populateResults() {
             <td>${team}</td>
             ${teams.map(opponent => `<td>${results[team][opponent] !== null ? results[team][opponent] : ''}</td>`).join('')}
             <td>${percentages[team].toFixed(2)}%</td>
-            <td>${rankingMap[team]}</td>
+            <td>${rankings[team]}</td>
         `;
         tbody.appendChild(row);
     });
