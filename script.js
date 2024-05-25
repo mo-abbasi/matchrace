@@ -1,5 +1,5 @@
 const teams = ['Widex Munch', 'Momentum', 'Rossing Racing', 'Team TBD', 'DTU'];
-const results = {
+let results = {
     'Widex Munch': { 'Momentum': null, 'Rossing Racing': null, 'Team TBD': null, 'DTU': null },
     'Momentum': { 'Widex Munch': null, 'Rossing Racing': null, 'Team TBD': 1, 'DTU': 1 },
     'Rossing Racing': { 'Widex Munch': null, 'Momentum': null, 'Team TBD': 1, 'DTU': 1 },
@@ -46,6 +46,13 @@ function calculateRankings(percentages) {
     return rankings;
 }
 
+function updateResults() {
+    completedRaces.forEach(race => {
+        results[race.winner][race.loser] = 1;
+        results[race.loser][race.winner] = 0;
+    });
+}
+
 function populateResults() {
     const tbody = document.getElementById('results-body');
     const percentages = calculateWinPercentage();
@@ -65,4 +72,7 @@ function populateResults() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', populateResults);
+document.addEventListener('DOMContentLoaded', () => {
+    updateResults(); // Update results based on completed races
+    populateResults(); // Populate the table with updated results
+});
