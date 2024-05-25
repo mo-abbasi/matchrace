@@ -11,10 +11,11 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    border: 1px solid black; /* Ensure table has a border */
 }
 
 th, td {
-    border: 1px solid black;
+    border: 1px solid black; /* Ensure cells have a border */
     padding: 10px;
     text-align: center;
 }
@@ -25,4 +26,9 @@ th {
 
 td {
     background-color: #fafafa;
+}
+
+td.diagonal {
+    background-color: black;
+    color: white;
 }
