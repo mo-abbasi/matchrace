@@ -38,8 +38,8 @@ function calculateWinPercentage() {
 
 function calculateRankings(percentages) {
     return Object.entries(percentages)
-        .sort(([, a], [, b]) => b - a)
-        .map(([team], index) => [team, index + 1]);
+        .sort(([, a], [, b]) => b - a) // Sort by win percentage
+        .map(([team], index) => [team, index + 1]); // Assign ranks
 }
 
 function populateResults() {
