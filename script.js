@@ -8,8 +8,8 @@ const results = {
 };
 
 const completedRaces = [
-    { winner: 'DTU', loser: 'Team TBD' },  // Rikke (DTU) won against Xavier (Team TBD)
-    { winner: 'Momentum', loser: 'DTU' },  // Mo (Momentum) won against Rikke (DTU)
+    { winner: 'DTU', loser: 'Team TBD' },   // Rikke (DTU) won against Xavier (Team TBD)
+    { winner: 'Momentum', loser: 'DTU' },   // Mo (Momentum) won against Rikke (DTU)
     { winner: 'Momentum', loser: 'Team TBD' },  // Mo (Momentum) won against Xavier (Team TBD)
     { winner: 'Rossing Racing', loser: 'DTU' }  // Matias (Rossing Racing) won against Rikke (DTU)
 ];
