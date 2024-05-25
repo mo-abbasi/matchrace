@@ -1,20 +1,26 @@
 const teams = ['Widex Munch', 'Momentum', 'Rossing Racing', 'Team TBD', 'DTU'];
-let results = {
-    'Widex Munch': { 'Momentum': null, 'Rossing Racing': null, 'Team TBD': null, 'DTU': null },
-    'Momentum': { 'Widex Munch': null, 'Rossing Racing': null, 'Team TBD': 0, 'DTU': 0 },
-    'Rossing Racing': { 'Widex Munch': null, 'Momentum': null, 'Team TBD': 1, 'DTU': 1 },
-    'Team TBD': { 'Widex Munch': null, 'Momentum': 1, 'Rossing Racing': 0, 'DTU': 0 },
-    'DTU': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 2 }
-};
+
+let results = {};
+
+// Initialize the results object with null values
+teams.forEach(team => {
+    results[team] = {};
+    teams.forEach(opponent => {
+        results[team][opponent] = null;
+    });
+});
 
 const completedRaces = [
-    { winner: 'DTU', loser: 'Team TBD' },   // Rikke (DTU) won against Xavier (Team TBD)
-    { winner: 'Momentum', loser: 'DTU' },   // Mo (Momentum) won against Rikke (DTU)
-    { winner: 'Momentum', loser: 'Team TBD' },  // Mo (Momentum) won against Xavier (Team TBD)
-    { winner: 'Rossing Racing', loser: 'DTU' },  // Matias (Rossing Racing) won against Rikke (DTU)
-    { winner: 'Rossing Racing', loser: 'Team TBD' }, // Matias (Rossing Racing) won against Xavier (Team TBD)
-    { winner: 'Matias', loser: 'Xavier' },  // Matias (Rossing Racing) won against Xavier (Team TBD)
-    { winner: 'Matias', loser: 'Momentum' }  // Matias (Rossing Racing) won against Mo (Momentum)
+    { winner: 'DTU', loser: 'Team TBD' },   // Rikke won against Xavier
+    { winner: 'Momentum', loser: 'DTU' },   // Mo won against Rikke
+    { winner: 'Momentum', loser: 'Team TBD' },  // Mo won against Xavier
+    { winner: 'Rossing Racing', loser: 'DTU' },  // Matias won against Rikke
+    { winner: 'Rossing Racing', loser: 'Team TBD' }, // Matias won against Xavier
+    { winner: 'Rossing Racing', loser: 'Momentum' }, // Matias won against Mo
+    { winner: 'Rossing Racing', loser: 'Widex Munch' }, // Matias won against Morten
+    { winner: 'Widex Munch', loser: 'DTU' }, // Morten won against Rikke
+    { winner: 'Widex Munch', loser: 'Team TBD' }, // Morten won against Xavier
+    { winner: 'Widex Munch', loser: 'Momentum' } // Morten won against Mo
 ];
 
 function calculateWinCounts() {
