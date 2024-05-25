@@ -15,18 +15,24 @@ const completedRaces = [
     { winner: 'Rossing Racing', loser: 'Team TBD' } // Matias (Rossing Racing) won against Xavier (Team TBD)
 ];
 
-function calculateWinPercentage() {
+function calculateWinCounts() {
     const winCounts = {};
-    const matchCounts = {};
     teams.forEach(team => {
         winCounts[team] = 0;
-        matchCounts[team] = 0;
     });
 
     completedRaces.forEach(race => {
         winCounts[race.winner]++;
-        matchCounts[race.winner]++;
-        matchCounts[race.loser]++;
+    });
+
+    return winCounts;
+}
+
+function calculateWinPercentage() {
+    const winCounts = calculateWinCounts();
+    const matchCounts = {};
+    teams.forEach(team => {
+        matchCounts[team] = completedRaces.filter(race => race.winner === team || race.loser === team).length;
     });
 
     const percentages = {};
