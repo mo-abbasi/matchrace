@@ -1,7 +1,7 @@
 const teams = ['Widex Munch', 'Momentum', 'Rossing Racing', 'Team TBD', 'DTU'];
 const results = {
     'Widex Munch': { 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 0, 'DTU': 0 },
-    'Momentum': { 'Widex Munch': 0, 'Rossing Racing': 0, 'Team TBD': 0, 'DTU': 1 },
+    'Momentum': { 'Widex Munch': 0, 'Rossing Racing': 0, 'Team TBD': 1, 'DTU': 1 },
     'Rossing Racing': { 'Widex Munch': 0, 'Momentum': 0, 'Team TBD': 0, 'DTU': 1 },
     'Team TBD': { 'Widex Munch': 0, 'Momentum': 0, 'Rossing Racing': 0, 'DTU': 0 },
     'DTU': { 'Widex Munch': 0, 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 0 }
@@ -13,21 +13,28 @@ results['Momentum']['DTU'] = 1; // Mo (Momentum) won against Rikke (DTU)
 results['Momentum']['Team TBD'] = 1; // Mo (Momentum) won against Xavier (Team TBD)
 results['Rossing Racing']['DTU'] = 1; // Matias (Rossing Racing) won against Rikke (DTU)
 
+const matchCounts = {
+    'Widex Munch': 0,
+    'Momentum': 2,
+    'Rossing Racing': 1,
+    'Team TBD': 2,
+    'DTU': 3
+};
+
 function calculateWinPercentage() {
     const percentages = {};
     for (let team in results) {
-        const matches = Object.keys(results[team]).length;
+        const matches = matchCounts[team];
         const wins = Object.values(results[team]).reduce((sum, win) => sum + win, 0);
-        percentages[team] = (wins / matches) * 100;
+        percentages[team] = matches > 0 ? (wins / matches) * 100 : 0;
     }
     return percentages;
 }
 
 function calculateRankings(percentages) {
-    const teamsByWinPercentage = Object.entries(percentages)
+    return Object.entries(percentages)
         .sort(([, a], [, b]) => b - a)
         .map(([team]) => team);
-    return teamsByWinPercentage;
 }
 
 function populateResults() {
