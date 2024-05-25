@@ -1,31 +1,23 @@
 const teams = ['Widex Munch', 'Momentum', 'Rossing Racing', 'Team TBD', 'DTU'];
 const results = {
-    'Widex Munch': { 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 0, 'DTU': 0 },
-    'Momentum': { 'Widex Munch': 0, 'Rossing Racing': 0, 'Team TBD': 1, 'DTU': 1 },
-    'Rossing Racing': { 'Widex Munch': 0, 'Momentum': 0, 'Team TBD': 0, 'DTU': 1 },
-    'Team TBD': { 'Widex Munch': 0, 'Momentum': 0, 'Rossing Racing': 0, 'DTU': 0 },
-    'DTU': { 'Widex Munch': 0, 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 0 }
-};
-
-// Results based on matches
-results['DTU']['Team TBD'] = 1; // Rikke (DTU) won against Xavier (Team TBD)
-results['Momentum']['DTU'] = 1; // Mo (Momentum) won against Rikke (DTU)
-results['Momentum']['Team TBD'] = 1; // Mo (Momentum) won against Xavier (Team TBD)
-results['Rossing Racing']['DTU'] = 1; // Matias (Rossing Racing) won against Rikke (DTU)
-
-const matchCounts = {
-    'Widex Munch': 0,
-    'Momentum': 2,
-    'Rossing Racing': 1,
-    'Team TBD': 2,
-    'DTU': 3
+    'Widex Munch': { 'Momentum': null, 'Rossing Racing': null, 'Team TBD': null, 'DTU': null },
+    'Momentum': { 'Widex Munch': null, 'Rossing Racing': null, 'Team TBD': 1, 'DTU': 1 },
+    'Rossing Racing': { 'Widex Munch': null, 'Momentum': null, 'Team TBD': null, 'DTU': 1 },
+    'Team TBD': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': null, 'DTU': 0 },
+    'DTU': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 1 }
 };
 
 function calculateWinPercentage() {
     const percentages = {};
     for (let team in results) {
-        const matches = matchCounts[team];
-        const wins = Object.values(results[team]).reduce((sum, win) => sum + win, 0);
+        let matches = 0;
+        let wins = 0;
+        for (let opponent in results[team]) {
+            if (results[team][opponent] !== null) {
+                matches++;
+                wins += results[team][opponent];
+            }
+        }
         percentages[team] = matches > 0 ? (wins / matches) * 100 : 0;
     }
     return percentages;
@@ -46,7 +38,7 @@ function populateResults() {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${team}</td>
-            ${teams.map(opponent => `<td>${results[team][opponent] !== undefined ? results[team][opponent] : ''}</td>`).join('')}
+            ${teams.map(opponent => `<td>${results[team][opponent] !== null ? results[team][opponent] : ''}</td>`).join('')}
             <td>${percentages[team].toFixed(2)}%</td>
         `;
         tbody.appendChild(row);
