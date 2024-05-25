@@ -14,7 +14,13 @@ const completedRaces = [
     { winner: 'Rossing Racing', loser: 'DTU' },  // Matias (Rossing Racing) won against Rikke (DTU)
     { winner: 'Rossing Racing', loser: 'Team TBD' }, // Matias (Rossing Racing) won against Xavier (Team TBD)
     { winner: 'Matias', loser: 'Xavier' },  // Matias (Rossing Racing) won against Xavier (Team TBD)
-    { winner: 'Matias', loser: 'Momentum' }  // Matias (Rossing Racing) won against Mo (Momentum)
+    { winner: 'Matias', loser: 'Momentum' },  // Matias (Rossing Racing) won against Mo (Momentum)
+    { winner: 'Matias', loser: 'Morten' },  // Matias (Rossing Racing) won against Morten
+    { winner: 'Matias', loser: 'Rikke' },  // Matias (Rossing Racing) won against Rikke
+    { winner: 'Morten', loser: 'Xavier' }, // Morten won against Xavier
+    { winner: 'Mo', loser: 'Xavier' }, // Mo won against Xavier
+    { winner: 'Mo', loser: 'Rikke' }, // Mo won against Rikke
+    { winner: 'Rikke', loser: 'Xavier' } // Rikke won against Xavier
 ];
 
 function calculateWinCounts() {
