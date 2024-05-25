@@ -78,7 +78,12 @@ function populateResults() {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${team}</td>
-            ${teams.map(opponent => `<td>${results[team][opponent] !== null ? results[team][opponent] : ''}</td>`).join('')}
+            ${teams.map(opponent => {
+                if (team === opponent) {
+                    return `<td class="diagonal"></td>`;
+                }
+                return `<td>${results[team][opponent] !== null ? results[team][opponent] : ''}</td>`;
+            }).join('')}
             <td>${percentages[team].toFixed(2)}%</td>
             <td>${rankings[team]}</td>
         `;
