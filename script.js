@@ -2,8 +2,8 @@ const teams = ['Widex Munch', 'Momentum', 'Rossing Racing', 'Team TBD', 'DTU'];
 const results = {
     'Widex Munch': { 'Momentum': null, 'Rossing Racing': null, 'Team TBD': null, 'DTU': null },
     'Momentum': { 'Widex Munch': null, 'Rossing Racing': null, 'Team TBD': 1, 'DTU': 1 },
-    'Rossing Racing': { 'Widex Munch': null, 'Momentum': null, 'Team TBD': null, 'DTU': 1 },
-    'Team TBD': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': null, 'DTU': 0 },
+    'Rossing Racing': { 'Widex Munch': null, 'Momentum': null, 'Team TBD': 1, 'DTU': 1 },
+    'Team TBD': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': 0, 'DTU': 0 },
     'DTU': { 'Widex Munch': null, 'Momentum': 0, 'Rossing Racing': 0, 'Team TBD': 1 }
 };
 
@@ -11,7 +11,8 @@ const completedRaces = [
     { winner: 'DTU', loser: 'Team TBD' },   // Rikke (DTU) won against Xavier (Team TBD)
     { winner: 'Momentum', loser: 'DTU' },   // Mo (Momentum) won against Rikke (DTU)
     { winner: 'Momentum', loser: 'Team TBD' },  // Mo (Momentum) won against Xavier (Team TBD)
-    { winner: 'Rossing Racing', loser: 'DTU' }  // Matias (Rossing Racing) won against Rikke (DTU)
+    { winner: 'Rossing Racing', loser: 'DTU' },  // Matias (Rossing Racing) won against Rikke (DTU)
+    { winner: 'Rossing Racing', loser: 'Team TBD' } // Matias (Rossing Racing) won against Xavier (Team TBD)
 ];
 
 function calculateWinPercentage() {
