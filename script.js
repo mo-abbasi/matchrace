@@ -46,6 +46,11 @@ function populateResults() {
     const tbody = document.getElementById('results-body');
     const percentages = calculateWinPercentage();
     const rankings = calculateRankings(percentages);
+    const rankingPositions = {};
+
+    rankings.forEach((team, index) => {
+        rankingPositions[team] = index + 1;
+    });
 
     teams.forEach(team => {
         const row = document.createElement('tr');
@@ -53,12 +58,10 @@ function populateResults() {
             <td>${team}</td>
             ${teams.map(opponent => `<td>${results[team][opponent] !== null ? results[team][opponent] : ''}</td>`).join('')}
             <td>${percentages[team].toFixed(2)}%</td>
+            <td>${rankingPositions[team]}</td>
         `;
         tbody.appendChild(row);
     });
-
-    const rankRow = document.getElementById('rank-row');
-    rankRow.innerHTML = `<th>Ranking</th><td colspan="6">${rankings.join(', ')}</td>`;
 }
 
 document.addEventListener('DOMContentLoaded', populateResults);
