@@ -51,6 +51,8 @@ function populateResults() {
     const percentages = calculateWinPercentage();
     const rankings = calculateRankings(percentages);
 
+    tbody.innerHTML = ''; // Clear previous content
+
     teams.forEach(team => {
         const row = document.createElement('tr');
         row.innerHTML = `
