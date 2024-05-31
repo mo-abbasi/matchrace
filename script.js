@@ -19,6 +19,18 @@ function initializeResults() {
 
 function updateResults() {
     completedRaces.forEach(race => {
+        // Check if the result already exists
+        const existingRaceIndex = completedRaces.findIndex(
+            r => r.winner === race.winner && r.loser === race.loser
+        );
+        if (existingRaceIndex !== -1) {
+            // Update existing result
+            completedRaces[existingRaceIndex] = race;
+        } else {
+            // Add new result
+            completedRaces.push(race);
+        }
+
         results[race.winner][race.loser] = 1;
         results[race.loser][race.winner] = 0;
     });
@@ -40,8 +52,14 @@ function calculateWinCounts() {
 function calculateWinPercentage() {
     const winCounts = calculateWinCounts();
     const matchCounts = {};
+
     teams.forEach(team => {
-        matchCounts[team] = completedRaces.filter(race => race.winner === team || race.loser === team).length;
+        matchCounts[team] = 0;
+    });
+
+    completedRaces.forEach(race => {
+        matchCounts[race.winner]++;
+        matchCounts[race.loser]++;
     });
 
     const percentages = {};
@@ -101,7 +119,18 @@ function addRaceResult(event) {
     const loser = document.getElementById('loser').value;
     
     if (winner !== loser) {
-        completedRaces.push({ winner, loser });
+        const newRace = { winner, loser };
+        const existingRaceIndex = completedRaces.findIndex(
+            r => r.winner === newRace.winner && r.loser === newRace.loser
+        );
+        if (existingRaceIndex !== -1) {
+            // Race result already exists, update it
+            completedRaces[existingRaceIndex] = newRace;
+        } else {
+            // Race result does not exist, add new race
+            completedRaces.push(newRace);
+        }
+        
         updateResults();
         populateResults();
     } else {
