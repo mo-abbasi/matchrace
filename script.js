@@ -1,27 +1,28 @@
-const teams = ['Widex Munch', 'Momentum', 'Rossing Racing', 'Team TBD', 'DTU'];
-
+let teams = [];
 let results = {};
+let completedRaces = [];
 
-// Initialize the results object with null values
-teams.forEach(team => {
-    results[team] = {};
-    teams.forEach(opponent => {
-        results[team][opponent] = null;
+async function fetchData() {
+    const response = await fetch('eventData.json');
+    const data = await response.json();
+    return data;
+}
+
+function initializeResults() {
+    teams.forEach(team => {
+        results[team] = {};
+        teams.forEach(opponent => {
+            results[team][opponent] = null;
+        });
     });
-});
+}
 
-const completedRaces = [
-    { winner: 'DTU', loser: 'Team TBD' },   // Rikke won against Xavier
-    { winner: 'Momentum', loser: 'DTU' },   // Mo won against Rikke
-    { winner: 'Momentum', loser: 'Team TBD' },  // Mo won against Xavier
-    { winner: 'Rossing Racing', loser: 'DTU' },  // Matias won against Rikke
-    { winner: 'Rossing Racing', loser: 'Team TBD' }, // Matias won against Xavier
-    { winner: 'Rossing Racing', loser: 'Momentum' }, // Matias won against Mo
-    { winner: 'Rossing Racing', loser: 'Widex Munch' }, // Matias won against Morten
-    { winner: 'Widex Munch', loser: 'DTU' }, // Morten won against Rikke
-    { winner: 'Widex Munch', loser: 'Team TBD' }, // Morten won against Xavier
-    { winner: 'Widex Munch', loser: 'Momentum' } // Morten won against Mo
-];
+function updateResults() {
+    completedRaces.forEach(race => {
+        results[race.winner][race.loser] = 1;
+        results[race.loser][race.winner] = 0;
+    });
+}
 
 function calculateWinCounts() {
     const winCounts = {};
@@ -60,13 +61,6 @@ function calculateRankings(percentages) {
     return rankings;
 }
 
-function updateResults() {
-    completedRaces.forEach(race => {
-        results[race.winner][race.loser] = 1;
-        results[race.loser][race.winner] = 0;
-    });
-}
-
 function populateResults() {
     const tbody = document.getElementById('results-body');
     const percentages = calculateWinPercentage();
@@ -91,7 +85,86 @@ function populateResults() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateResults(); // Update results based on completed races
-    populateResults(); // Populate the table with updated results
+function populateForm() {
+    const winnerSelect = document.getElementById('winner');
+    const loserSelect = document.getElementById('loser');
+
+    winnerSelect.innerHTML = teams.map(team => `<option value="${team}">${team}</option>`).join('');
+    loserSelect.innerHTML = teams.map(team => `<option value="${team}">${team}</option>`).join('');
+}
+
+function addRaceResult(event) {
+    event.preventDefault();
+    const winner = document.getElementById('winner').value;
+    const loser = document.getElementById('loser').value;
+    
+    if (winner !== loser) {
+        completedRaces.push({ winner, loser });
+        updateResults();
+        populateResults();
+    } else {
+        alert("Winner and loser cannot be the same team.");
+    }
+}
+
+function setupEvent(event) {
+    event.preventDefault();
+    const eventName = document.getElementById('event-name').value;
+    const teamInputs = document.querySelectorAll('.team-name');
+    
+    teams = Array.from(teamInputs).map(input => input.value).filter(name => name.trim() !== '');
+
+    if (teams.length < 2) {
+        alert("Please enter at least two teams.");
+        return;
+    }
+
+    document.getElementById('event-title').textContent = eventName;
+    document.getElementById('event-heading').textContent = eventName;
+    
+    initializeResults();
+    updateResults();
+    populateResults();
+    populateForm();
+    
+    document.getElementById('setup-form').style.display = 'none';
+    document.getElementById('race-form').style.display = 'block';
+    document.querySelector('table').style.display = 'table';
+}
+
+function addTeamInput() {
+    const teamsContainer = document.getElementById('teams-container');
+    const inputCount = teamsContainer.children.length;
+    const newInput = document.createElement('input');
+    newInput.type = 'text';
+    newInput.className = 'team-name';
+    newInput.placeholder = `Team ${inputCount + 1}`;
+    teamsContainer.appendChild(newInput);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const data = await fetchData();
+        document.getElementById('event-title').textContent = data.eventName;
+        document.getElementById('event-heading').textContent = data.eventName;
+        teams = data.teams;
+        completedRaces = data.completedRaces;
+
+        initializeResults();
+        updateResults();
+        populateResults();
+        populateForm();
+        
+        document.getElementById('setup-form').style.display = 'none';
+        document.getElementById('race-form').style.display = 'block';
+        document.querySelector('table').style.display = 'table';
+    } catch (error) {
+        document.getElementById('setup-form').style.display = 'block';
+        document.getElementById('race-form').style.display = 'none';
+        document.querySelector('table').style.display = 'none';
+    }
+    
+    document.getElementById('setup-form').addEventListener('submit', setupEvent);
+    document.getElementById('race-form').addEventListener('submit', addRaceResult);
+    document.getElementById('add-team').addEventListener('click', addTeamInput);
 });

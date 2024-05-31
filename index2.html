@@ -3,28 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Match Race Results</title>
-    <link rel="stylesheet" href="style.css">
+    <title id="event-title">Live Match Race Results</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Live Match Race Results</h1>
+    <h1 id="event-heading">Live Match Race Results</h1>
+
+    <!-- Event Setup Form -->
+    <form id="setup-form">
+        <h2>Setup Event</h2>
+        <label for="event-name">Event Name:</label>
+        <input type="text" id="event-name" name="event-name" required>
+        <h3>Teams</h3>
+        <div id="teams-container">
+            <!-- Dynamic team inputs will be added here -->
+        </div>
+        <button type="button" id="add-team">Add Team</button>
+        <button type="submit">Start Event</button>
+    </form>
+
+    <!-- Results Table -->
     <table>
         <thead>
-            <tr>
-                <th>Teams</th>
-                <th>Widex Munch</th>
-                <th>Momentum</th>
-                <th>Rossing Racing</th>
-                <th>Team TBD</th>
-                <th>DTU</th>
-                <th>Win %</th>
-                <th>Rank</th>
+            <tr id="header-row">
+                <!-- Header cells will be populated here -->
             </tr>
         </thead>
         <tbody id="results-body">
             <!-- Results will be populated here -->
         </tbody>
     </table>
+    
+    <!-- Race Form -->
+    <form id="race-form">
+        <h2>Add New Race Result</h2>
+        <label for="winner">Winner:</label>
+        <select id="winner" name="winner"></select>
+        <label for="loser">Loser:</label>
+        <select id="loser" name="loser"></select>
+        <button type="submit">Add Result</button>
+    </form>
+    
     <script src="script.js"></script>
 </body>
 </html>

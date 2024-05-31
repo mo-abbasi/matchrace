@@ -7,11 +7,26 @@ h1 {
     text-align: center;
 }
 
+form {
+    margin: 20px 0;
+}
+
+#teams-container input {
+    display: block;
+    margin-bottom: 10px;
+}
+
+button {
+    display: block;
+    margin: 10px 0;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     border: 1px solid black;
+    display: none; /* Initially hidden */
 }
 
 th, td {
@@ -31,4 +46,8 @@ td {
 td.diagonal {
     background-color: black;
     color: white;
+}
+
+#race-form {
+    display: none; /* Initially hidden */
 }
