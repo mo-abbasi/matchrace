@@ -63,9 +63,11 @@ function calculateRankings(percentages) {
 
 function populateResults() {
     const tbody = document.getElementById('results-body');
+    const headerRow = document.getElementById('header-row');
     const percentages = calculateWinPercentage();
     const rankings = calculateRankings(percentages);
 
+    headerRow.innerHTML = '<th>Teams</th>' + teams.map(team => `<th>${team}</th>`).join('') + '<th>Win %</th><th>Rank</th>';
     tbody.innerHTML = ''; // Clear previous content
 
     teams.forEach(team => {
