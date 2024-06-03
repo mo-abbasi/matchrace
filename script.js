@@ -1,11 +1,17 @@
 let teams = [];
 let results = {};
 let completedRaces = [];
+let events = {};
 
-async function fetchData() {
-    const response = await fetch('eventData.json');
-    const data = await response.json();
-    return data;
+function saveEvents() {
+    localStorage.setItem('events', JSON.stringify(events));
+}
+
+function loadEvents() {
+    const storedEvents = localStorage.getItem('events');
+    if (storedEvents) {
+        events = JSON.parse(storedEvents);
+    }
 }
 
 function initializeResults() {
@@ -18,6 +24,7 @@ function initializeResults() {
 }
 
 function updateResults() {
+    initializeResults();
     completedRaces.forEach(race => {
         results[race.winner][race.loser] = 1;
         results[race.loser][race.winner] = 0;
@@ -26,7 +33,7 @@ function updateResults() {
 
 function calculateWinPercentage() {
     const percentages = {};
-    
+
     teams.forEach(team => {
         let wins = 0;
         let completedMatches = 0;
@@ -93,18 +100,23 @@ function addRaceResult(event) {
     event.preventDefault();
     const winner = document.getElementById('winner').value;
     const loser = document.getElementById('loser').value;
-    
+
     if (winner !== loser) {
         const newRace = { winner, loser };
-        
+
         // Remove any existing race between these teams
         completedRaces = completedRaces.filter(r => !(r.winner === newRace.winner && r.loser === newRace.loser));
-        
+
         // Add new result
         completedRaces.push(newRace);
-        
+
         updateResults();
         populateResults();
+
+        // Save updated results for the current event
+        const currentEventName = document.getElementById('event-heading').textContent;
+        events[currentEventName].completedRaces = completedRaces;
+        saveEvents();
     } else {
         alert("Winner and loser cannot be the same team.");
     }
@@ -114,7 +126,7 @@ function setupEvent(event) {
     event.preventDefault();
     const eventName = document.getElementById('event-name').value;
     const teamInputs = document.querySelectorAll('.team-name');
-    
+
     teams = Array.from(teamInputs).map(input => input.value).filter(name => name.trim() !== '');
 
     if (teams.length < 2) {
@@ -122,17 +134,22 @@ function setupEvent(event) {
         return;
     }
 
+    events[eventName] = { teams, completedRaces: [] };
+    saveEvents();
+
     document.getElementById('event-title').textContent = eventName;
     document.getElementById('event-heading').textContent = eventName;
-    
+
     initializeResults();
     updateResults();
     populateResults();
     populateForm();
-    
+
     document.getElementById('setup-form').style.display = 'none';
     document.getElementById('race-form').style.display = 'block';
     document.querySelector('table').style.display = 'table';
+
+    displayEventsList();
 }
 
 function addTeamInput() {
@@ -145,28 +162,53 @@ function addTeamInput() {
     teamsContainer.appendChild(newInput);
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const data = await fetchData();
-        document.getElementById('event-title').textContent = data.eventName;
-        document.getElementById('event-heading').textContent = data.eventName;
-        teams = data.teams;
-        completedRaces = data.completedRaces;
+function displayEventsList() {
+    const eventsList = document.getElementById('events-list');
+    eventsList.innerHTML = '';
+    Object.keys(events).forEach(eventName => {
+        const eventItem = document.createElement('li');
+        eventItem.textContent = eventName;
 
-        initializeResults();
-        updateResults();
-        populateResults();
-        populateForm();
-        
-        document.getElementById('setup-form').style.display = 'none';
-        document.getElementById('race-form').style.display = 'block';
-        document.querySelector('table').style.display = 'table';
-    } catch (error) {
-        document.getElementById('setup-form').style.display = 'block';
-        document.getElementById('race-form').style.display = 'none';
-        document.querySelector('table').style.display = 'none';
-    }
-    
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            delete events[eventName];
+            saveEvents();
+            displayEventsList();
+        });
+
+        eventItem.appendChild(deleteButton);
+        eventItem.addEventListener('click', () => {
+            loadEvent(eventName);
+        });
+
+        eventsList.appendChild(eventItem);
+    });
+}
+
+function loadEvent(eventName) {
+    const event = events[eventName];
+    teams = event.teams;
+    completedRaces = event.completedRaces;
+
+    document.getElementById('event-title').textContent = eventName;
+    document.getElementById('event-heading').textContent = eventName;
+
+    initializeResults();
+    updateResults();
+    populateResults();
+    populateForm();
+
+    document.getElementById('setup-form').style.display = 'none';
+    document.getElementById('race-form').style.display = 'block';
+    document.querySelector('table').style.display = 'table';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadEvents();
+    displayEventsList();
+
     document.getElementById('setup-form').addEventListener('submit', setupEvent);
     document.getElementById('race-form').addEventListener('submit', addRaceResult);
     document.getElementById('add-team').addEventListener('click', addTeamInput);
