@@ -3,15 +3,42 @@ let results = {};
 let completedRaces = [];
 let events = {};
 
+const eventsFilePath = 'events.json';
+
 function saveEvents() {
-    localStorage.setItem('events', JSON.stringify(events));
+    fetch(eventsFilePath, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(events),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log('Events saved successfully');
+    })
+    .catch(error => {
+        console.error('Error saving events:', error);
+    });
 }
 
 function loadEvents() {
-    const storedEvents = localStorage.getItem('events');
-    if (storedEvents) {
-        events = JSON.parse(storedEvents);
-    }
+    fetch(eventsFilePath)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        events = data;
+        displayEventsList();
+    })
+    .catch(error => {
+        console.error('Error loading events:', error);
+    });
 }
 
 function initializeResults() {
