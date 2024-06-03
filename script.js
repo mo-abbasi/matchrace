@@ -19,52 +19,28 @@ function initializeResults() {
 
 function updateResults() {
     completedRaces.forEach(race => {
-        // Check if the result already exists
-        const existingRaceIndex = completedRaces.findIndex(
-            r => r.winner === race.winner && r.loser === race.loser
-        );
-        if (existingRaceIndex !== -1) {
-            // Update existing result
-            completedRaces[existingRaceIndex] = race;
-        } else {
-            // Add new result
-            completedRaces.push(race);
-        }
-
         results[race.winner][race.loser] = 1;
         results[race.loser][race.winner] = 0;
     });
 }
 
-function calculateWinCounts() {
-    const winCounts = {};
-    teams.forEach(team => {
-        winCounts[team] = 0;
-    });
-
-    completedRaces.forEach(race => {
-        winCounts[race.winner]++;
-    });
-
-    return winCounts;
-}
-
 function calculateWinPercentage() {
-    const winCounts = calculateWinCounts();
-    const matchCounts = {};
-
-    teams.forEach(team => {
-        matchCounts[team] = 0;
-    });
-
-    completedRaces.forEach(race => {
-        matchCounts[race.winner]++;
-        matchCounts[race.loser]++;
-    });
-
     const percentages = {};
+    
     teams.forEach(team => {
-        percentages[team] = matchCounts[team] > 0 ? (winCounts[team] / matchCounts[team]) * 100 : 0;
+        let wins = 0;
+        let completedMatches = 0;
+
+        teams.forEach(opponent => {
+            if (results[team][opponent] !== null) {
+                completedMatches++;
+                if (results[team][opponent] === 1) {
+                    wins++;
+                }
+            }
+        });
+
+        percentages[team] = completedMatches > 0 ? (wins / completedMatches) * 100 : 0;
     });
 
     return percentages;
@@ -120,16 +96,12 @@ function addRaceResult(event) {
     
     if (winner !== loser) {
         const newRace = { winner, loser };
-        const existingRaceIndex = completedRaces.findIndex(
-            r => r.winner === newRace.winner && r.loser === newRace.loser
-        );
-        if (existingRaceIndex !== -1) {
-            // Race result already exists, update it
-            completedRaces[existingRaceIndex] = newRace;
-        } else {
-            // Race result does not exist, add new race
-            completedRaces.push(newRace);
-        }
+        
+        // Remove any existing race between these teams
+        completedRaces = completedRaces.filter(r => !(r.winner === newRace.winner && r.loser === newRace.loser));
+        
+        // Add new result
+        completedRaces.push(newRace);
         
         updateResults();
         populateResults();
