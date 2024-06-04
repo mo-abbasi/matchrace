@@ -7,14 +7,17 @@ const EVENTS_KEY = 'matchRaceEvents';
 
 function saveEvents() {
     localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-    console.log('Events saved successfully');
+    console.log('Events saved successfully', events);
 }
 
 function loadEvents() {
     const storedEvents = localStorage.getItem(EVENTS_KEY);
     if (storedEvents) {
         events = JSON.parse(storedEvents);
+        console.log('Events loaded successfully', events);
         displayEventsList();
+    } else {
+        console.log('No events found in storage');
     }
 }
 
@@ -25,6 +28,7 @@ function initializeResults() {
             results[team][opponent] = null;
         });
     });
+    console.log('Results initialized', results);
 }
 
 function updateResults() {
@@ -33,6 +37,7 @@ function updateResults() {
         results[race.winner][race.loser] = 1;
         results[race.loser][race.winner] = 0;
     });
+    console.log('Results updated', results);
 }
 
 function calculateWinPercentage() {
