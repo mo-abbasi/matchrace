@@ -3,13 +3,15 @@ let results = {};
 let completedRaces = [];
 let events = {};
 
+const EVENTS_KEY = 'matchRaceEvents';
+
 function saveEvents() {
-    localStorage.setItem('events', JSON.stringify(events));
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
     console.log('Events saved successfully');
 }
 
 function loadEvents() {
-    const storedEvents = localStorage.getItem('events');
+    const storedEvents = localStorage.getItem(EVENTS_KEY);
     if (storedEvents) {
         events = JSON.parse(storedEvents);
         displayEventsList();
