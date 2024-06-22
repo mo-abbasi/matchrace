@@ -213,62 +213,48 @@ function loadEvent(eventName) {
     document.getElementById('race-form').style.display = 'block';
 }
 
-document.getElementById('upload-button').addEventListener('click', () => {
-    const fileInput = document.getElementById('file-input');
-    const file = fileInput.files[0];
+function fetchEventData() {
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Use a CORS proxy
+    const targetUrl = 'https://raw.githubusercontent.com/mo-abbasi/matchrace/master/data.json'; // URL of the raw data.json file
 
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            console.log('File content:', e.target.result); // Debugging log
-            try {
-                const jsonData = JSON.parse(e.target.result);
-                console.log('Parsed JSON Data:', jsonData); // Debugging log
-                loadEventData(jsonData);
-            } catch (error) {
-                console.error('Error parsing JSON:', error); // Debugging log
-                alert('Invalid JSON file. Please check the format.');
+    fetch(proxyUrl + targetUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        };
-        reader.readAsText(file);
-    } else {
-        alert('Please select a file to upload.');
-    }
-});
+            return response.json();
+        })
+        .then(data => {
+            console.log('Fetched Event Data:', data);
+            loadEventData(data);
+        })
+        .catch(error => {
+            console.error('Error fetching event data:', error);
+            alert('Failed to load event data from data.json');
+        });
+}
 
 function loadEventData(data) {
-    const { eventName, teams: loadedTeams, completedRaces: loadedRaces } = data;
-
-    console.log('Loaded Event Name:', eventName); // Debugging log
-    console.log('Loaded Teams:', loadedTeams); // Debugging log
-    console.log('Loaded Completed Races:', loadedRaces); // Debugging log
-
-    teams = loadedTeams;
-    completedRaces = loadedRaces;
-
-    document.getElementById('event-title').textContent = eventName;
-    document.getElementById('event-heading').textContent = eventName;
-
-    events[eventName] = { teams, completedRaces };
-    saveEvents();
+    // Assuming your data.json structure, adjust accordingly
+    events = data.events;
+    teams = data.teams;
+    completedRaces = data.completedRaces;
 
     initializeResults();
     updateResults();
     populateResults();
     populateForm();
-
-    document.getElementById('setup-form').style.display = 'none';
-    document.getElementById('race-form').style.display = 'block';
-    document.querySelector('table').style.display = 'table';
+    displayEventsList();
 }
 
-// Event Listeners for other actions
-document.getElementById('setup-form').addEventListener('submit', setupEvent);
-document.getElementById('race-form').addEventListener('submit', addRaceResult);
-document.getElementById('add-team').addEventListener('click', addTeamInput);
-
-// Initial load
 document.addEventListener('DOMContentLoaded', () => {
     loadEvents();
     displayEventsList();
+
+    document.getElementById('setup-form').addEventListener('submit', setupEvent);
+    document.getElementById('race-form').addEventListener('submit', addRaceResult);
+    document.getElementById('add-team').addEventListener('click', addTeamInput);
+
+    // Fetch event data when the page loads
+    fetchEventData();
 });

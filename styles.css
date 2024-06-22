@@ -16,18 +16,9 @@ form {
     margin-bottom: 10px;
 }
 
-button, input[type="submit"] {
+button {
     display: block;
     margin: 10px 0;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-input[type="file"] {
-    margin: 10px 0;
-    padding: 10px 0;
-    font-size: 16px;
 }
 
 table {
@@ -57,31 +48,6 @@ td.diagonal {
     color: white;
 }
 
-#race-form, #upload-form {
+#race-form {
     display: none; /* Initially hidden */
-}
-
-/* Style for the file input and upload button */
-#upload-form {
-    display: block;
-    margin: 20px 0;
-}
-
-#file-input {
-    display: block;
-    margin-bottom: 10px;
-}
-
-#upload-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#upload-button:hover {
-    background-color: #45a049;
 }
