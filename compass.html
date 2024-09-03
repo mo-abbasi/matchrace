@@ -6,6 +6,80 @@
     <title>Test Compass - Match Race with Mo</title>
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .compass {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            background-color: #fff;
+            background-image: url('compass-instrument.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .compass > .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-style: solid;
+            border-width: 30px 20px 0 20px;
+            border-color: red transparent transparent transparent;
+            z-index: 1;
+        }
+
+        .compass > .compass-circle,
+        .compass > .my-point {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+        }
+
+        .compass > .my-point {
+            opacity: 0;
+            width: 20%;
+            height: 20%;
+            background: rgb(8, 223, 69);
+            border-radius: 50%;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .start-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #debug-info {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            width: 320px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
     <div class="compass">
@@ -15,15 +89,30 @@
     </div>
     <button class="start-btn" onclick="startCompass()">Start Compass</button>
 
+    <div id="debug-info">
+        <strong>Debug Information:</strong>
+        <p id="compass-debug">Compass Heading: Not available</p>
+        <p id="location-debug">Location: Not acquired yet</p>
+    </div>
+
     <script>
         const compassCircle = document.querySelector(".compass-circle");
         const myPoint = document.querySelector(".my-point");
+        const debugInfo = document.getElementById("debug-info");
+        const compassDebug = document.getElementById("compass-debug");
+        const locationDebug = document.getElementById("location-debug");
+
         const isIOS = navigator.userAgent.match(/(iPod|iPhone|iPad)/) && navigator.userAgent.match(/AppleWebKit/);
 
         let pointDegree;
 
         function initCompass() {
-            navigator.geolocation.getCurrentPosition(locationHandler, handleError);
+            navigator.geolocation.getCurrentPosition(locationHandler, handleError, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+
             if (!isIOS) {
                 if (window.DeviceOrientationEvent) {
                     window.addEventListener("deviceorientation", handleOrientation, true);
@@ -62,6 +151,7 @@
 
             if (compass !== undefined) {
                 compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
+                compassDebug.innerText = `Compass Heading: ${compass.toFixed(2)} degrees`;
 
                 // Show or hide the pointer based on the current heading
                 if (pointDegree !== undefined) {
@@ -73,6 +163,7 @@
                     }
                 }
             } else {
+                compassDebug.innerText = "Compass data is unavailable";
                 console.error("Compass data is unavailable");
             }
         }
@@ -80,6 +171,7 @@
         function locationHandler(position) {
             const { latitude, longitude } = position.coords;
             pointDegree = calculateBearing(latitude, longitude);
+            locationDebug.innerText = `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}`;
 
             if (pointDegree < 0) {
                 pointDegree += 360;
@@ -87,7 +179,6 @@
         }
 
         function calculateBearing(lat1, lon1) {
-            // Replace with your specific target location coordinates
             const target = { lat: 21.422487, lng: 39.826206 };  // Example: Mecca
 
             const lat2 = target.lat * Math.PI / 180;
