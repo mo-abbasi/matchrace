@@ -3,38 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="event-title">Live Match Race Results</title>
-    <meta name="description" content="Live Results for Match Race events">
-    <meta property="og:title" content="Live Match Race Results">
-    <meta property="og:description" content="Up-to-date match race results and rankings">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="DM.jpg">
-    <meta property="og:url" content="https://yourwebsite.com/live-result.html">
-    <meta property="og:site_name" content="Match Race with Mo">
+    <title>Live Match Race Results</title>
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #e0f7fa;
+        }
+
+        td {
+            background-color: #ffffff;
+        }
+
+        td.diagonal {
+            background-color: #007f5f;
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-    <h1 id="event-heading">Live Match Race Results</h1>
+    <h1>Live Match Race Results</h1>
 
-    <!-- Events List -->
-    <h2>Previous Events</h2>
-    <ul id="events-list"></ul>
-
-    <!-- Event Setup Form -->
-    <form id="setup-form">
-        <h2>Setup Event</h2>
-        <label for="event-name">Event Name:</label>
-        <input type="text" id="event-name" name="event-name" required>
-        <h3>Teams</h3>
-        <div id="teams-container">
-            <!-- Dynamic team inputs will be added here -->
-        </div>
-        <button type="button" id="add-team">Add Team</button>
-        <button type="submit">Start Event</button>
-    </form>
-
-    <!-- Results Table -->
+    <!-- Table for displaying results -->
     <table>
         <thead>
             <tr id="header-row">
@@ -46,16 +50,65 @@
         </tbody>
     </table>
 
-    <!-- Race Form -->
-    <form id="race-form">
-        <h2>Add Race Result</h2>
-        <label for="winner">Winner:</label>
-        <select id="winner" name="winner"></select>
-        <label for="loser">Loser:</label>
-        <select id="loser" name="loser"></select>
-        <button type="submit">Add Result</button>
-    </form>
+    <!-- Include the data.js file -->
+    <script src="data.js"></script>
+    
+    <script>
+        // Process and display the data after the data.js file is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            displayResults(eventData); // eventData is from data.js
+        });
 
-    <script src="script.js"></script>
+        function displayResults(data) {
+            const teams = data.teams;
+            const results = calculateResults(teams, data.completedRaces);
+            const headerRow = document.getElementById('header-row');
+            const resultsBody = document.getElementById('results-body');
+
+            // Create header row
+            let headerHTML = '<th>Teams</th>';
+            teams.forEach(team => {
+                headerHTML += `<th>${team}</th>`;
+            });
+            headerRow.innerHTML = headerHTML;
+
+            // Create results rows
+            teams.forEach(team => {
+                let rowHTML = `<tr><td>${team}</td>`;
+                teams.forEach(opponent => {
+                    if (team === opponent) {
+                        rowHTML += `<td class="diagonal">X</td>`; // Diagonal cells (team vs. itself)
+                    } else {
+                        const result = results[team][opponent];
+                        rowHTML += `<td>${result !== undefined ? result : ''}</td>`;
+                    }
+                });
+                rowHTML += '</tr>';
+                resultsBody.innerHTML += rowHTML;
+            });
+        }
+
+        function calculateResults(teams, completedRaces) {
+            // Initialize the results matrix
+            const results = {};
+            teams.forEach(team => {
+                results[team] = {};
+                teams.forEach(opponent => {
+                    if (team !== opponent) {
+                        results[team][opponent] = ''; // Default value
+                    }
+                });
+            });
+
+            // Populate the results matrix based on completed races
+            completedRaces.forEach(race => {
+                const { winner, loser } = race;
+                results[winner][loser] = 'Win';
+                results[loser][winner] = 'Lose';
+            });
+
+            return results;
+        }
+    </script>
 </body>
 </html>
