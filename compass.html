@@ -153,9 +153,8 @@
                 compass = Math.abs(event.alpha - 360);
             }
 
-            // Log the orientation data to debug
-            console.log("Device Orientation:", event);
-            console.log("Calculated Compass Heading:", compass);
+            // Correct the rotation direction
+            compass = 360 - compass;
 
             if (compass !== undefined) {
                 compassImage.style.transform = `rotate(${compass}deg)`;
