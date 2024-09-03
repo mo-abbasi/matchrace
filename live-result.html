@@ -30,66 +30,108 @@
         }
 
         td.diagonal {
-            background-color: #007f5f;
+            background-color: #000000;
             color: #ffffff;
+        }
+
+        .event-name {
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .ranking {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .last-updated {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+            text-align: right;
         }
     </style>
 </head>
 <body>
     <h1>Live Match Race Results</h1>
 
-    <!-- Table for displaying results -->
-    <table>
-        <thead>
-            <tr id="header-row">
-                <!-- Header cells will be populated here -->
-            </tr>
-        </thead>
-        <tbody id="results-body">
-            <!-- Result rows will be populated here -->
-        </tbody>
-    </table>
+    <div id="events-container">
+        <!-- Event tables will be inserted here -->
+    </div>
+
+    <div class="last-updated" id="last-updated">
+        <!-- Last updated time will be inserted here -->
+    </div>
 
     <!-- Include the data.js file -->
     <script src="data.js"></script>
     
     <script>
-        // Process and display the data after the data.js file is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            displayResults(eventData); // eventData is from data.js
+            displayAllEvents(eventData);
+            fetchLastModifiedTime('data.js');
         });
 
-        function displayResults(data) {
-            const teams = data.teams;
-            const results = calculateResults(teams, data.completedRaces);
-            const headerRow = document.getElementById('header-row');
-            const resultsBody = document.getElementById('results-body');
+        function displayAllEvents(events) {
+            const container = document.getElementById('events-container');
+            container.innerHTML = '';  // Clear the container
 
-            // Create header row
-            let headerHTML = '<th>Teams</th>';
-            teams.forEach(team => {
-                headerHTML += `<th>${team}</th>`;
-            });
-            headerRow.innerHTML = headerHTML;
+            events.forEach(event => {
+                const eventDiv = document.createElement('div');
+                
+                // Display event name
+                const eventName = document.createElement('div');
+                eventName.className = 'event-name';
+                eventName.innerText = event.eventName;
+                eventDiv.appendChild(eventName);
 
-            // Create results rows
-            teams.forEach(team => {
-                let rowHTML = `<tr><td>${team}</td>`;
-                teams.forEach(opponent => {
-                    if (team === opponent) {
-                        rowHTML += `<td class="diagonal">X</td>`; // Diagonal cells (team vs. itself)
-                    } else {
-                        const result = results[team][opponent];
-                        rowHTML += `<td>${result !== undefined ? result : ''}</td>`;
-                    }
+                // Create table
+                const table = document.createElement('table');
+                const headerRow = document.createElement('tr');
+                let headerHTML = '<th>Teams</th>';
+                event.teams.forEach(team => {
+                    headerHTML += `<th>${team}</th>`;
                 });
-                rowHTML += '</tr>';
-                resultsBody.innerHTML += rowHTML;
+                headerRow.innerHTML = headerHTML;
+                table.appendChild(headerRow);
+
+                const results = calculateResults(event.teams, event.completedRaces);
+
+                event.teams.forEach(team => {
+                    const row = document.createElement('tr');
+                    let rowHTML = `<td>${team}</td>`;
+                    event.teams.forEach(opponent => {
+                        if (team === opponent) {
+                            rowHTML += `<td class="diagonal">X</td>`;
+                        } else {
+                            const result = results[team][opponent];
+                            rowHTML += `<td>${result !== undefined ? result : 'x'}</td>`;
+                        }
+                    });
+                    row.innerHTML = rowHTML;
+                    table.appendChild(row);
+                });
+
+                // Append the table
+                eventDiv.appendChild(table);
+
+                // Display ranking and win percentages
+                const rankingDiv = document.createElement('div');
+                rankingDiv.className = 'ranking';
+                const ranking = calculateRanking(event.teams, results);
+                rankingDiv.innerHTML = `Ranking:<br>${ranking.map((team, index) => `${index + 1}. ${team.name} (${team.winPercentage}%)`).join('<br>')}`;
+                eventDiv.appendChild(rankingDiv);
+
+                // Append the event to the container
+                container.appendChild(eventDiv);
             });
         }
 
         function calculateResults(teams, completedRaces) {
-            // Initialize the results matrix
             const results = {};
             teams.forEach(team => {
                 results[team] = {};
@@ -100,14 +142,41 @@
                 });
             });
 
-            // Populate the results matrix based on completed races
             completedRaces.forEach(race => {
                 const { winner, loser } = race;
-                results[winner][loser] = 'Win';
-                results[loser][winner] = 'Lose';
+                results[winner][loser] = '1'; // Win is 1
+                results[loser][winner] = '0'; // Loss is 0
             });
 
             return results;
+        }
+
+        function calculateRanking(teams, results) {
+            const winCounts = teams.map(team => {
+                const opponents = Object.keys(results[team]);
+                const wins = opponents.filter(opponent => results[team][opponent] === '1').length;
+                const totalRaces = opponents.filter(opponent => results[team][opponent] !== '').length;
+                const winPercentage = totalRaces > 0 ? ((wins / totalRaces) * 100).toFixed(2) : '0.00';
+                return { name: team, winPercentage: parseFloat(winPercentage), wins };
+            });
+
+            // Sort by win percentage (descending) and by number of wins (descending)
+            winCounts.sort((a, b) => b.winPercentage - a.winPercentage || b.wins - a.wins);
+
+            return winCounts;
+        }
+
+        function fetchLastModifiedTime(filePath) {
+            fetch(filePath, { method: 'HEAD' })
+                .then(response => {
+                    const lastModified = response.headers.get('Last-Modified');
+                    if (lastModified) {
+                        const lastUpdatedDiv = document.getElementById('last-updated');
+                        const formattedDate = new Date(lastModified).toLocaleString();
+                        lastUpdatedDiv.innerText = `Last Updated: ${formattedDate}`;
+                    }
+                })
+                .catch(error => console.error('Error fetching last modified time:', error));
         }
     </script>
 </body>
