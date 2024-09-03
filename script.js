@@ -217,6 +217,8 @@ function fetchEventData() {
     const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Use a CORS proxy
     const targetUrl = 'https://raw.githubusercontent.com/mo-abbasi/matchrace/master/data.json'; // URL of the raw data.json file
 
+    showLoadingSpinner();
+
     fetch(proxyUrl + targetUrl)
         .then(response => {
             if (!response.ok) {
@@ -227,15 +229,16 @@ function fetchEventData() {
         .then(data => {
             console.log('Fetched Event Data:', data);
             loadEventData(data);
+            hideLoadingSpinner();
         })
         .catch(error => {
             console.error('Error fetching event data:', error);
             alert('Failed to load event data from data.json');
+            hideLoadingSpinner();
         });
 }
 
 function loadEventData(data) {
-    // Assuming your data.json structure, adjust accordingly
     events = data.events;
     teams = data.teams;
     completedRaces = data.completedRaces;
