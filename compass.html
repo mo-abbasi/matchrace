@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Compass</title>
+    <title>Test Compass - Match Race with Mo</title>
+    <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,8 +13,112 @@
         <div class="compass-circle"></div>
         <div class="my-point"></div>
     </div>
-    <button class="start-btn">Start Compass</button>
+    <button class="start-btn" onclick="startCompass()">Start Compass</button>
 
-    <script src="script.js"></script>
+    <script>
+        const compassCircle = document.querySelector(".compass-circle");
+        const myPoint = document.querySelector(".my-point");
+        const isIOS = navigator.userAgent.match(/(iPod|iPhone|iPad)/) && navigator.userAgent.match(/AppleWebKit/);
+
+        let pointDegree;
+
+        function initCompass() {
+            navigator.geolocation.getCurrentPosition(locationHandler, handleError);
+            if (!isIOS) {
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener("deviceorientation", handleOrientation, true);
+                } else {
+                    alert("Device Orientation is not supported on this device.");
+                }
+            }
+        }
+
+        function startCompass() {
+            if (isIOS) {
+                DeviceOrientationEvent.requestPermission().then((response) => {
+                    if (response === "granted") {
+                        window.addEventListener("deviceorientation", handleOrientation, true);
+                    } else {
+                        alert("Permission denied. Please allow access to device orientation.");
+                    }
+                }).catch(() => alert("Device orientation not supported on this device."));
+            } else {
+                initCompass();
+            }
+        }
+
+        function handleOrientation(event) {
+            let compass;
+
+            if (event.absolute && event.alpha !== null) {
+                compass = event.alpha;
+            } else if (event.webkitCompassHeading !== undefined) {
+                // For iOS, webkitCompassHeading gives the compass heading directly
+                compass = event.webkitCompassHeading;
+            } else {
+                // Fallback if neither is available
+                compass = Math.abs(event.alpha - 360);
+            }
+
+            if (compass !== undefined) {
+                compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
+
+                // Show or hide the pointer based on the current heading
+                if (pointDegree !== undefined) {
+                    const tolerance = 15;
+                    if (Math.abs(pointDegree - compass) <= tolerance || Math.abs(pointDegree - (compass + 360)) <= tolerance) {
+                        myPoint.style.opacity = 1;
+                    } else {
+                        myPoint.style.opacity = 0;
+                    }
+                }
+            } else {
+                console.error("Compass data is unavailable");
+            }
+        }
+
+        function locationHandler(position) {
+            const { latitude, longitude } = position.coords;
+            pointDegree = calculateBearing(latitude, longitude);
+
+            if (pointDegree < 0) {
+                pointDegree += 360;
+            }
+        }
+
+        function calculateBearing(lat1, lon1) {
+            // Replace with your specific target location coordinates
+            const target = { lat: 21.422487, lng: 39.826206 };  // Example: Mecca
+
+            const lat2 = target.lat * Math.PI / 180;
+            const lon2 = target.lng * Math.PI / 180;
+            const lat1Rad = lat1 * Math.PI / 180;
+            const lon1Rad = lon1 * Math.PI / 180;
+
+            const y = Math.sin(lon2 - lon1Rad) * Math.cos(lat2);
+            const x = Math.cos(lat1Rad) * Math.sin(lat2) - Math.sin(lat1Rad) * Math.cos(lat2) * Math.cos(lon2 - lon1Rad);
+            let bearing = Math.atan2(y, x) * 180 / Math.PI;
+            return (bearing + 360) % 360;
+        }
+
+        function handleError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initCompass);
+    </script>
 </body>
 </html>

@@ -5,12 +5,6 @@
     <title>Test Location - Match Race with Mo</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="Test the geolocation and time features for match racing.">
-    <meta property="og:title" content="Test Location - Match Race with Mo">
-    <meta property="og:description" content="Test the geolocation and time features for match racing.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="DM.jpg">
-    <meta property="og:url" content="https://yourwebsite.com/test-location.html">
-    <meta property="og:site_name" content="Match Race with Mo">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -19,8 +13,8 @@
     <h1><center>🚧👷‍♂️👷‍♀️ Attention! This space is currently under construction! 🚧👷‍♂️👷‍♀️</center></h1>
 
     <button onclick="myFunction()">Click me</button>
-    <button onclick="getElementById('demo').innerHTML = Date()">What is the time?</button>
-    <button onclick="retrieve_location()">My Location</button>
+    <button onclick="document.getElementById('demo').innerHTML = new Date().toLocaleString()">What is the time?</button>
+    <button onclick="retrieveLocation()">My Location</button>
 
     <p id="local"></p>
     <p id="session"></p>
@@ -28,19 +22,76 @@
     <p id="Location"></p>
 
     <form name="form1" id="form1">
-        Geolocation Capability: <input type="text" name="capability">
+        Geolocation Capability: <input type="text" name="capability" readonly>
         <p />
-        Latitude:  <input type="text" name="latitude">
+        Latitude:  <input type="text" name="latitude" readonly>
         <p />
-        Longitude: <input type="text" name="longitude">
+        Longitude: <input type="text" name="longitude" readonly>
         <p />
-        Speed: <input type="text" name="speed">
+        Speed: <input type="text" name="speed" readonly>
         <p />
-        Heading: <input type="text" name="heading">
+        Heading: <input type="text" name="heading" readonly>
         <p />
     </form>
 
-    <script src="script.js"></script>
+    <script>
+        // Test button click counter
+        function myFunction() {
+            if (sessionStorage.clickcount) {
+                sessionStorage.clickcount = Number(sessionStorage.clickcount) + 1;
+            } else {
+                sessionStorage.clickcount = 1;
+            }
+            if (localStorage.clickcount) {
+                localStorage.clickcount = Number(localStorage.clickcount) + 1;
+            } else {
+                localStorage.clickcount = 1;
+            }
+            document.getElementById("local").innerHTML = "You have clicked the button " + localStorage.clickcount + " time(s).";
+            document.getElementById("session").innerHTML = "You have clicked the button " + sessionStorage.clickcount + " time(s) in this session.";
+        }
+
+        // Retrieve geolocation
+        function retrieveLocation() {
+            if (navigator.geolocation) {
+                document.form1.capability.value = "Enabled";
+                navigator.geolocation.getCurrentPosition(displayLocation, handleError, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            } else {
+                document.form1.capability.value = "Not Enabled";
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Display the geolocation information
+        function displayLocation(position) {
+            document.form1.latitude.value = position.coords.latitude;
+            document.form1.longitude.value = position.coords.longitude;
+            document.form1.speed.value = position.coords.speed || "N/A";
+            document.form1.heading.value = position.coords.heading || "N/A";
+        }
+
+        // Handle geolocation errors
+        function handleError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
 
 </body>
 </html>
