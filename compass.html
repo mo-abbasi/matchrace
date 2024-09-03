@@ -23,11 +23,6 @@
             border-radius: 50%;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             margin: 20px auto;
-            background-color: #fff;
-            background-image: url('compass-instrument.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
         }
 
         .compass > .arrow {
@@ -41,6 +36,16 @@
             border-width: 30px 20px 0 20px;
             border-color: red transparent transparent transparent;
             z-index: 1;
+        }
+
+        .compass > img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            z-index: 0;
         }
 
         .compass > .compass-circle,
@@ -83,6 +88,7 @@
 </head>
 <body>
     <div class="compass">
+        <img src="compass-instrument.png" alt="Compass Image">
         <div class="arrow"></div>
         <div class="compass-circle"></div>
         <div class="my-point"></div>
@@ -97,7 +103,7 @@
 
     <script>
         const compassCircle = document.querySelector(".compass-circle");
-        const myPoint = document.querySelector(".my-point");
+        const compassImage = document.querySelector(".compass img");
         const debugInfo = document.getElementById("debug-info");
         const compassDebug = document.getElementById("compass-debug");
         const locationDebug = document.getElementById("location-debug");
@@ -142,18 +148,19 @@
             if (event.absolute && event.alpha !== null) {
                 compass = event.alpha;
             } else if (event.webkitCompassHeading !== undefined) {
-                // For iOS, webkitCompassHeading gives the compass heading directly
                 compass = event.webkitCompassHeading;
             } else {
-                // Fallback if neither is available
                 compass = Math.abs(event.alpha - 360);
             }
 
+            // Log the orientation data to debug
+            console.log("Device Orientation:", event);
+            console.log("Calculated Compass Heading:", compass);
+
             if (compass !== undefined) {
-                compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
+                compassImage.style.transform = `rotate(${compass}deg)`;
                 compassDebug.innerText = `Compass Heading: ${compass.toFixed(2)} degrees`;
 
-                // Show or hide the pointer based on the current heading
                 if (pointDegree !== undefined) {
                     const tolerance = 15;
                     if (Math.abs(pointDegree - compass) <= tolerance || Math.abs(pointDegree - (compass + 360)) <= tolerance) {
@@ -179,7 +186,7 @@
         }
 
         function calculateBearing(lat1, lon1) {
-            const target = { lat: 21.422487, lng: 39.826206 };  // Example: Mecca
+            const target = { lat: 21.422487, lng: 39.826206 };
 
             const lat2 = target.lat * Math.PI / 180;
             const lon2 = target.lng * Math.PI / 180;
